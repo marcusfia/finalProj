@@ -20,7 +20,7 @@ def store_data(conn, data):
 def main():
     if len(sys.argv) < 2:
         sys.exit(
-            "Usage: %s file.csv [key_column_index, value_column_index], where key_column_index and value_column_index are zero-based ints (0,1,2,3) for first second third csv column"
+            "Usage: %s file.csv [key_column_index, value_column_index], where key_column_index and value_column_index are zero-based ints (0,1,2,3) for first second third csv column etc.."
             % __file__
         )
     columns = (0, 1) if len(sys.argv) < 4 else (int(x) for x in sys.argv[2:4])
