@@ -1,4 +1,8 @@
-# Credit to users confused00 and bsa on stack exchange for this bit of code 
+# Credit to users confused00 and bsa on stack exchange for much of this code
+
+# Structure of our dataset csv's:
+# created_at	tweet_id	tweet	likes	retweet_count	source	user_id	user_name	user_screen_name	user_description	user_join_date	user_followers_count	user_location	lat	long	city	country	continent	state	state_code	collected_at
+#    0             1          2       3           4            5        6       7              8                 9                   10                  11                 12           13           14            15          16       17           18
 
 import redis, csv, json, sys
 
@@ -20,7 +24,7 @@ def store_data(conn, data):
 def main():
     if len(sys.argv) < 2:
         sys.exit(
-            "Usage: %s file.csv [key_column_index, value_column_index], where key_column_index and value_column_index are zero-based ints (0,1,2,3) for first second third csv column etc.."
+            "Usage: %s file.csv [key_column_index, value_column_index], where key_column_index and value_column_index are zero-based ints (0,1,2,3) for first second third csv column"
             % __file__
         )
     columns = (0, 1) if len(sys.argv) < 4 else (int(x) for x in sys.argv[2:4])
@@ -30,3 +34,8 @@ def main():
 
 if '__main__' == __name__:
     main()
+
+
+
+# example usage:     python3 main.py joebiden_tweets.csv 6 2     
+# here user_id would be key and tweet would be value
