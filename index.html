@@ -1,94 +1,192 @@
-
 <html>
-<head>
-  <title>Final Project ECE5995</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-      <script type="text/javascript" src='https://api.mapbox.com/mapbox.js/v3.1.0/mapbox.js'></script>
 
-  <style>
-    #map{ height: 100% }
-  </style>
-</head>
-<body>
 
-  <div id="map"></div>
 
-  <script>
+    <head>
 
- // <p style=" text-align:${textAlign}; margin-top:${text_margin_top}rem; color:${font_color}; font-size:${font_size}px;">${data}${data_suffix}</p>
+        <title>JEMA Interactive Map</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" defer integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
-  var markerStyle = `
-      background-color:blue;
-      opacity:10%;
-      width: .5rem;
-      height: .5rem;                        
-      left: -.8rem;
-      bottom: -.8rem;
-      display: block;
-      position: relative;
-      border-radius:50%;
-      `
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" defer integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+        <!-- Load Leaflet from CDN -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
+        <script type="text/javascript" src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+        <script type="text/javascript" src='https://api.mapbox.com/mapbox.js/v3.1.0/mapbox.js'></script>
+        <script type="text/javascript" src="us-states.js"></script>
+        <style>
+
+            html, body, #map, #container-fluid {
+                height: 100%;
+                width: 100%;
+                padding-bottom: 12px;
+                padding-top: 12px;
+            }
+            .full-height {
+                width: auto;
+                height: 100%;
+                padding-top: 19px;
+            }
+        </style>
+    </head> 
+    <body>
+
+        <!-- BEGIN LEAFLETJS MAP CONTAINER -->
+        <div class="container-fluid full-height">
+            <div class="row full-height">
+                <div class="col pt-0 pl-0 pr-0">
+                    <!-- BEGIN LEAFLETJS MAP -->
+                    <div id="map" class="map"></div>
+                    <!-- END LEAFLETJS MAP -->
+                </div>
+            </div>
+        </div>
+        <!-- END LEAFLETJS CONTAINER -->
+        
+
+        <script>
+
+          var markerStyle = `
+            background-color:blue;
+            opacity:10%;
+            width: .5rem;
+            height: .5rem;                        
+            left: -.8rem;
+            bottom: -.8rem;
+            display: block;
+            position: relative;
+            border-radius:50%;
+            `
+  
+
+          function createIcon() {
+            icon = L.divIcon({ 
+              className: "my-custom-pin", 
+              iconAnchor: [0, 15],
+              labelAnchor: [0, 0],
+              popupAnchor: [0, 0],
+              html: `<span style="${markerStyle}">
+                            
+                        </span>`
+            });
+
+            return icon;
+          }
+
+          // create map and add to webpage
+          // L.mapbox.accessToken = 'pk.eyJ1IjoibWZkb21haW4iLCJhIjoiY2toeHRhaHQwMG44NzJzdGh4ZHZsY2xuNSJ9.8IxXKXtyoZUHzBQzBPpKSA';
+          // var mainmap = L.mapbox.styleLayer('mapbox://styles/mapbox/light-v9');
+          // var map = L.map('map', {  center: { lat: 41.65, lng: -91.53 }, zoomSnap: 0, zoom: 10, tilesize: 512 })
+          // map.addLayer(mainmap);
+
+
+          var map = L.map('map').setView([37.8, -96], 4);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWZkb21haW4iLCJhIjoiY2toeHRhaHQwMG44NzJzdGh4ZHZsY2xuNSJ9.8IxXKXtyoZUHzBQzBPpKSA', {
+          maxZoom: 18,
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          id: 'mapbox/light-v9',
+          tileSize: 512,
+          zoomOffset: -1
+        }).addTo(map);
+
+          
+          // control that shows state info on hover
+          var info = L.control();
+
+        info.onAdd = function (map) {
+          this._div = L.DomUtil.create('div', 'info');
+          this.update();
+          return this._div;
+        };
+
+        info.update = function (props) {
+          this._div.innerHTML = '<h4>US Population Density</h4>' +  (props ?
+            '<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
+            : 'Hover over a state');
+        };
+
+        info.addTo(map);
+
+
+          // add dots for each tweet in iowa and NY
+        //   $.getJSON("data.geojson", function(data){
+
+        //     var geojsonMarkerOptions = {
+        //         radius: 8,
+        //         fillColor: "#ff7800",
+        //         color: "#000",
+        //         weight: 1,
+        //         opacity: 1,
+        //         fillOpacity: 0.8
+        //     };
+
+        //     L.geoJson(data, {
+        //         pointToLayer: function (feature, latlng) {
+
+        //             var IR_icon = createIcon();
+                      
+        //               old_data = false;
+
+        //               return L.marker(latlng, {
+        //                   icon: icon,
+        //               });
+
+        //         }
+        //   }).addTo(map);
+        // })
+
+
+        // state outlines
+        L.geoJson(statesData).addTo(map);
+        
+
+      </script>
+
+
+        
+
+
+        <!-- BOTTOM NAVBAR -->
+        <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark pl-2 pr-2 mt-0 mb-0 pt-0 pb-0">
+ 
+
+            <div class="w-100 d-block center pt-0 mt-0">
+                <ul class="navbar-nav ml-0 pt-0 pr-0 w-100">
   
 
 
-function createIcon() {
+            <!-- BUTTONS -->
+                <div class="navbar-collapse collapse d-none d-xl-block no-wrap mt-2">
+                    <div class="grid w-100 no-wrap">
+                        <div class="row no-wrap">
+                            <ul class="navbar-nav pl-3 mb-2 flex-row navbar-collapse collapse d-none d-sm-block no-wrap">
+                                <div class="w-100 navbar-collapse collapse order-1 mr-auto" >
+                                    <ul class="navbar-nav mr-auto pr-5">
+                                        <li class="nav-item btn-group" role="group">
+                                            <button type="button" class="navbtn_jema btn btn-secondary" label="Query1" name="Query1">Query 1</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Query2" name="Query2">Query 2</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Query3" name="Query3">Query 3</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Query4" name="Query4">Query 4</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Query5" name="Query5">Query 5</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Query6" name="Query6">Query 6</button>
+                                            <button type="button" class="navbtn_jema btn btn-secondary borderL" label="Query7" name="Query7">Query 7</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- END BUTTONS -->
 
-  icon = L.divIcon({ 
-    className: "my-custom-pin", 
-    iconAnchor: [0, 15],
-    labelAnchor: [0, 0],
-    popupAnchor: [0, 0],
-    html: `<span style="${markerStyle}">
-                   
-               </span>`
-  });
-
-  return icon;
-}
-
-
-
-
-  // initialize the map
-
-
-  // load a tile layer
-    L.mapbox.accessToken = 'pk.eyJ1IjoibWZkb21haW4iLCJhIjoiY2toeHRhaHQwMG44NzJzdGh4ZHZsY2xuNSJ9.8IxXKXtyoZUHzBQzBPpKSA';
-            var mainmap = L.mapbox.styleLayer('mapbox://styles/mapbox/light-v9');
-            var map = L.map('map', {  center: { lat: 41.65, lng: -91.53 }, zoomSnap: 0, zoom: 10 })
-            map.addLayer(mainmap);
-
-$.getJSON("data.geojson", function(data){
-
-      var geojsonMarkerOptions = {
-          radius: 8,
-          fillColor: "#ff7800",
-          color: "#000",
-          weight: 1,
-          opacity: 1,
-          fillOpacity: 0.8
-      };
-
-      L.geoJson(data, {
-          pointToLayer: function (feature, latlng) {
-
-              var IR_icon = createIcon();
-                
-                old_data = false;
-
-                return L.marker(latlng, {
-                    icon: icon,
-                    riseOnHover: true
-                });
-
-          }
-      }).addTo(map);
-})
-
-
-  </script>
-</body>
+            </div>
+        </nav>     
+    </body>
 </html>
-	
